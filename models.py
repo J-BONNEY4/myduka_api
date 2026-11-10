@@ -1,8 +1,10 @@
-from sqlalchemy import Integer, String, Float,DateTime
+from sqlalchemy import Integer, String, Float,DateTime,ForeignKey
 from datetime import datetime
-from sqlalchemy.orm import Mapped, mapped_column
-from database import Base
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column,relationship
+from models import Base
 
+class Base(DeclarativeBase):
+      pass
 
 class User(Base):
        __tablename__="users"
@@ -14,7 +16,7 @@ class User(Base):
 class Product(Base):
     __tablename__ = "products"
     id: Mapped[int] = mapped_column(Integer, primary_key=True)
-    # user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     product_name: Mapped[str] = mapped_column(String(100))
     buying_price: Mapped[float] = mapped_column(Float)
     selling_price: Mapped[float] = mapped_column(Float)
