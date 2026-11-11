@@ -1,6 +1,6 @@
 from fastapi import FastAPI
-from data_schemas import ProductRequest, ProductResponse
-from models import Base, Product,User
+from data_schemas import ProductRequest, ProductResponse,PurchaseRequest,PurchaseResponse
+from models import Base, Product,Purchase
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 
@@ -47,4 +47,22 @@ def create_product(prod: ProductRequest):
 @app.get("/products", response_model=list[ProductResponse])
 def get_products(user_id: int):
     query = select(Product).where(Product.user_id == user_id)
+    return session.scalars(query).all()
+
+
+@app.post("/purchases", response_model=PurchaseResponse)
+def create_purchase(purch:PurchaseRequest):
+    new_purchase=Purchase(
+        product_id=purch.product_id,
+        quantity=purch.quantity,
+        paid_amount=purch.paid_amount
+
+    )
+    session.add(new_purchase)
+    session.commit()
+    return new_purchase
+
+@app.get("/purchases", response_model=list[PurchaseResponse])
+def get_purchases(product_id:int):
+    query=select(Purchase).where(Purchase.product_id==product_id)
     return session.scalars(query).all()
