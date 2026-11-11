@@ -1,7 +1,6 @@
 from sqlalchemy import Integer, String, Float,DateTime,ForeignKey
 from datetime import datetime
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column,relationship
-from models import Base
 
 class Base(DeclarativeBase):
       pass
