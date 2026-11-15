@@ -64,3 +64,4 @@ class Payment(Base):
     crid:Mapped[str | None]= mapped_column(String(200))
     phone_number:Mapped[str] =mapped_column(String(20))
 
+

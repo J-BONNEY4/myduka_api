@@ -71,3 +71,13 @@ class PaymentResponse(BaseModel):
     status:str
     phone_number:str
     created_at:datetime 
+
+
+class PaymentUpdate(BaseModel):
+    sale_id: int | None = None
+    amount: float | None = None
+    trans_code: str | None = None
+    mrid: str | None = None
+    crid: str | None = None
+    status: str | None = None
+    phone_number: str | None = None
