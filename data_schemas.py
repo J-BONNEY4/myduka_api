@@ -5,14 +5,14 @@ from pydantic import BaseModel
 
 
 class ProductRequest(BaseModel):
-    user_id:int
+    user_id:int |None = None
     product_name: str
     buying_price: float
     selling_price: float
 
 class ProductResponse(BaseModel):
     id: int
-    user_id:int
+    user_id:int |None = None
     product_name: str
     buying_price: float
     selling_price: float
@@ -46,6 +46,7 @@ class SaleResponse(BaseModel):
 
 
 class SaleDetailsRequest(BaseModel):
+    sale_id:int
     product_id:int
     quantity:int
 
@@ -59,6 +60,11 @@ class SaleDetailsResponse(BaseModel):
 
 class PaymentRequest(BaseModel):
     sale_id:int
+    amount:float
+    trans_code:str | None=None
+    mrid: str
+    crid: str
+    status:str
     phone_number:str
 
 class PaymentResponse(BaseModel):
@@ -72,12 +78,11 @@ class PaymentResponse(BaseModel):
     phone_number:str
     created_at:datetime 
 
-
 class PaymentUpdate(BaseModel):
-    sale_id: int | None = None
-    amount: float | None = None
+    sale_id: int
+    amount: float
     trans_code: str | None = None
     mrid: str | None = None
     crid: str | None = None
-    status: str | None = None
-    phone_number: str | None = None
+    status: str
+    phone_number: str
