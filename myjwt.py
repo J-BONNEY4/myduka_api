@@ -116,17 +116,17 @@ def get_current_active_user(
     return current_user
 
 # Test Function to authenticate the above.
-# hashed password
-hashed_pass= get_password_hash("dummypassword")
-print("Password Verification is..........",verify_password("dummypassword", hashed_pass))
+# # hashed password
+# hashed_pass= get_password_hash("dummypassword")
+# print("Password Verification is..........",verify_password("dummypassword", hashed_pass))
 
-#Token Functions
-access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-token = create_access_token(
-        data={"sub": "johndoe@example.com"}, 
-        expires_delta=access_token_expires
-    )
-print("Token is------------",token)
-#User Functions
-user = get_current_user(token)
-print("User email is------------",user)
+# #Token Functions
+# access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+# token = create_access_token(
+#         data={"sub": "johndoe@example.com"}, 
+#         expires_delta=access_token_expires
+#     )
+# print("Token is------------",token)
+# #User Functions
+# user = get_current_user(token)
+# print("User email is------------",user)
