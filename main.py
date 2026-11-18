@@ -1,11 +1,13 @@
 from fastapi import FastAPI,HTTPException
-from myjwt import create_access_token,verify_password,get_current_user
+from myjwt import create_access_token,verify_password,get_current_user,password_hash,SECRET_KEY,ALGORITHM
+import jwt
 from data_schemas import ProductRequest, ProductResponse,PurchaseRequest,PurchaseResponse,SaleRequest,SaleResponse,SaleDetailsResponse,SaleDetailsRequest,PaymentResponse,PaymentRequest,PaymentUpdate
-from models import Base, Product,Purchase,Sale,SaleDetail,Payment
+from data_schemas import UserResponse,LoginRequest,RegisterRequest,TokenResponse
+from models import Base, Product,Purchase,Sale,SaleDetail,Payment,User
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
-
-
+from datetime import datetime,timedelta,timezone
+from pydantic import BaseModel
 app = FastAPI()
 
 engine=create_engine("sqlite:///./myduka_api.db",echo=True)
@@ -17,10 +19,8 @@ session=Session(engine)
 
 # def add_user():
 #     user=User(
-#         full_name="",
 #         email="",
 #         password="",
-#         phone_number=""
 #     )
 #     session.add(user)
 #     session.commit()
@@ -29,6 +29,41 @@ session=Session(engine)
 @app.get("/")
 def home():
     return {"Duka FastAPI Version": "1.0"}
+
+
+#REGISTER
+@app.post("/register", response_model=UserResponse, status_code=201)
+def register(user: RegisterRequest):
+    query = select(User).where(User.email == user.email.lower())
+    existing = session.scalars(query).first()
+    if existing:
+        raise HTTPException(status_code=400, detail="Email already registered")
+
+    new_user = User(
+        full_name=user.full_name,
+        email=user.email.lower(),
+        hashed_password=password_hash.hash(user.password),
+    )
+    session.add(new_user)
+    session.commit()
+    session.refresh(new_user)
+    return new_user
+
+# LOGIN.
+@app.post("/login", response_model=TokenResponse)
+def login(user: LoginRequest):
+    query = select(User).where(User.email == user.email.lower())
+    db_user = session.scalars(query).first()
+
+    if db_user is None or not password_hash.verify(user.password, db_user.hashed_password):
+        raise HTTPException(status_code=401, detail="Incorrect email or password")
+
+    token = jwt.encode(
+        {"sub": db_user.email, "exp": datetime.now(timezone.utc) + timedelta(minutes=30)},
+        SECRET_KEY,
+        algorithm=ALGORITHM,
+    )
+    return {"access_token": token}
 
 
 @app.post("/products", response_model=ProductResponse)

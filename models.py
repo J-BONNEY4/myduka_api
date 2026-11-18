@@ -25,6 +25,7 @@ class Product(Base):
 class Purchase(Base):
        __tablename__="purchases"
        id:Mapped[int]=mapped_column(Integer,primary_key=True)
+       user_id:Mapped[int] = mapped_column(Integer,ForeignKey("users.id"))
        product_id:Mapped[int]=mapped_column(Integer,ForeignKey("products.id"))
        # supplier_id:Mapped[int]=mapped_column(Integer)
        quantity:Mapped[int]=mapped_column(Integer)
