@@ -1,14 +1,32 @@
 from fastapi import FastAPI,HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from myjwt import create_access_token,verify_password,get_current_user,password_hash,SECRET_KEY,ALGORITHM
 import jwt
-from data_schemas import ProductRequest, ProductResponse,PurchaseRequest,PurchaseResponse,SaleRequest,SaleResponse,SaleDetailsResponse,SaleDetailsRequest,PaymentResponse,PaymentRequest,PaymentUpdate
-from data_schemas import UserResponse,LoginRequest,RegisterRequest,TokenResponse
+from data_schemas import (ProductRequest, ProductResponse,PurchaseRequest,PurchaseResponse,
+                          SaleRequest,SaleResponse,SaleDetailsResponse,SaleDetailsRequest,
+                          PaymentResponse,PaymentRequest,PaymentUpdate)
+from data_schemas import LoginRequest,RegisterRequest,LoginResponse,RegisterResponse
 from models import Base, Product,Purchase,Sale,SaleDetail,Payment,User
 from sqlalchemy import create_engine, select
 from sqlalchemy.orm import Session
 from datetime import datetime,timedelta,timezone
 from pydantic import BaseModel
+
 app = FastAPI()
+origins = [
+    "http://localhost.tiangolo.com",
+    "https://localhost.tiangolo.com",
+    "http://localhost",
+    "http://localhost:8080",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 engine=create_engine("sqlite:///./myduka_api.db",echo=True)
 
@@ -16,6 +34,7 @@ engine=create_engine("sqlite:///./myduka_api.db",echo=True)
 Base.metadata.create_all(engine)
 
 session=Session(engine)
+
 
 # def add_user():
 #     user=User(
@@ -32,7 +51,7 @@ def home():
 
 
 #REGISTER
-@app.post("/register", response_model=UserResponse, status_code=201)
+@app.post("/register", response_model=RegisterResponse)
 def register(user: RegisterRequest):
     query = select(User).where(User.email == user.email.lower())
     existing = session.scalars(query).first()
@@ -50,7 +69,7 @@ def register(user: RegisterRequest):
     return new_user
 
 # LOGIN.
-@app.post("/login", response_model=TokenResponse)
+@app.post("/login", response_model=LoginResponse)
 def login(user: LoginRequest):
     query = select(User).where(User.email == user.email.lower())
     db_user = session.scalars(query).first()

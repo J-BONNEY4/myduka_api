@@ -91,12 +91,17 @@ class RegisterRequest(BaseModel):
     email:str
     password:str
 
+class RegisterResponse(BaseModel):
+    email:str
+    password:str
+
+
 class LoginRequest(BaseModel):
     email:str
     password:str
 
 
-class UserResponse(BaseModel):
+class LoginResponse(BaseModel):
     id:int
     email:str
 
